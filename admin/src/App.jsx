@@ -57,13 +57,27 @@ export default function App() {
     reader.readAsDataURL(file);
   };
 
+  const handlePriceChange = (field, value) => {
+    const onlyDigits = value.replace(/\D/g, '');
+    if (!onlyDigits) {
+      setNewProduct({ ...newProduct, [field]: '' });
+      return;
+    }
+    const withCommas = parseInt(onlyDigits, 10).toLocaleString('en-US');
+    setNewProduct({ ...newProduct, [field]: withCommas });
+  };
+
   const submitProduct = async (e) => {
     e.preventDefault();
+    if (!newProduct.imageUrl) {
+      alert("Iltimos, rasm yuklanishini ozgina kuting...");
+      return;
+    }
     try {
       const payload = {
         ...newProduct,
-        oldPrice: newProduct.oldPrice ? parseInt(newProduct.oldPrice) : null,
-        newPrice: parseInt(newProduct.newPrice)
+        oldPrice: newProduct.oldPrice ? parseInt(newProduct.oldPrice.replace(/,/g, ''), 10) : null,
+        newPrice: parseInt(newProduct.newPrice.replace(/,/g, ''), 10)
       };
       await axios.post(`${API_URL}/products`, payload);
       setIsAddingProduct(false);
@@ -129,8 +143,8 @@ export default function App() {
                   <input type="text" placeholder="Kategoriya (masalan: Moybo'yoq)" required value={newProduct.category} onChange={e => setNewProduct({...newProduct, category: e.target.value})} />
                   <textarea placeholder="Tarifi (o'lchamlari va hk)" required value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})}></textarea>
                   <div className="price-inputs">
-                    <input type="number" placeholder="Eski narxi (ixtiyoriy)" value={newProduct.oldPrice} onChange={e => setNewProduct({...newProduct, oldPrice: e.target.value})} />
-                    <input type="number" placeholder="Yangi narxi" required value={newProduct.newPrice} onChange={e => setNewProduct({...newProduct, newPrice: e.target.value})} />
+                    <input type="text" placeholder="Eski narxi (ixtiyoriy)" value={newProduct.oldPrice} onChange={e => handlePriceChange('oldPrice', e.target.value)} />
+                    <input type="text" placeholder="Yangi narxi" required value={newProduct.newPrice} onChange={e => handlePriceChange('newPrice', e.target.value)} />
                   </div>
                   <div className="image-upload">
                     <label>Asar rasmini yuklang:</label>
