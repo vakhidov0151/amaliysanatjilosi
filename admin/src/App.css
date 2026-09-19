@@ -111,3 +111,11 @@ th {
   gap: 10px;
 }
 
+
+.sidebar h2 { color: #333 !important; }
+.sidebar nav button { color: #333 !important; }
+.sidebar nav button.active { color: #fff !important; }
+h2 { color: #333 !important; }
+table { color: #333 !important; }
+body { color: #333 !important; }
+
