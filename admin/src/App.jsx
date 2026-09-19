@@ -25,6 +25,55 @@ export default function App() {
     }
   };
 
+  const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    title: '', description: '', oldPrice: '', newPrice: '', category: '', imageUrl: ''
+  });
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800;
+        let width = img.width;
+        let height = img.height;
+        if (width > MAX_WIDTH) {
+          height = Math.round((height * MAX_WIDTH) / width);
+          width = MAX_WIDTH;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        setNewProduct(prev => ({ ...prev, imageUrl: dataUrl }));
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const submitProduct = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...newProduct,
+        oldPrice: newProduct.oldPrice ? parseInt(newProduct.oldPrice) : null,
+        newPrice: parseInt(newProduct.newPrice)
+      };
+      await axios.post(`${API_URL}/products`, payload);
+      setIsAddingProduct(false);
+      setNewProduct({ title: '', description: '', oldPrice: '', newPrice: '', category: '', imageUrl: '' });
+      axios.get(`${API_URL}/products`).then(res => setProducts(res.data));
+    } catch (error) {
+      alert("Xatolik yuz berdi");
+    }
+  };
+
   return (
     <div className="admin-container">
       <aside className="sidebar">
@@ -67,8 +116,31 @@ export default function App() {
           <div>
             <div className="header-flex">
               <h2>Galereyadagi asarlar</h2>
-              <button className="primary-btn"><Plus /> Yangi qo'shish</button>
+              <button className="primary-btn" onClick={() => setIsAddingProduct(!isAddingProduct)}>
+                <Plus /> {isAddingProduct ? "Yopish" : "Yangi qo'shish"}
+              </button>
             </div>
+            
+            {isAddingProduct && (
+              <div className="add-product-form">
+                <h3>Yangi asar qo'shish</h3>
+                <form onSubmit={submitProduct}>
+                  <input type="text" placeholder="Asar nomi" required value={newProduct.title} onChange={e => setNewProduct({...newProduct, title: e.target.value})} />
+                  <input type="text" placeholder="Kategoriya (masalan: Moybo'yoq)" required value={newProduct.category} onChange={e => setNewProduct({...newProduct, category: e.target.value})} />
+                  <textarea placeholder="Tarifi (o'lchamlari va hk)" required value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})}></textarea>
+                  <div className="price-inputs">
+                    <input type="number" placeholder="Eski narxi (ixtiyoriy)" value={newProduct.oldPrice} onChange={e => setNewProduct({...newProduct, oldPrice: e.target.value})} />
+                    <input type="number" placeholder="Yangi narxi" required value={newProduct.newPrice} onChange={e => setNewProduct({...newProduct, newPrice: e.target.value})} />
+                  </div>
+                  <div className="image-upload">
+                    <label>Asar rasmini yuklang:</label>
+                    <input type="file" accept="image/*" onChange={handleImageUpload} required />
+                    {newProduct.imageUrl && <img src={newProduct.imageUrl} width="100" alt="Preview" />}
+                  </div>
+                  <button type="submit" className="primary-btn">Saqlash</button>
+                </form>
+              </div>
+            )}
             <table>
               <thead>
                 <tr>
