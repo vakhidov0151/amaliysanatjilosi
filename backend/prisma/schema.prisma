@@ -8,12 +8,12 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  telegramId String  @unique
+  id         Int      @id @default(autoincrement())
+  telegramId String   @unique
   name       String
   phone      String?
-  orders     Order[]
   createdAt  DateTime @default(now())
+  orders     Order[]
 }
 
 model Product {
@@ -30,10 +30,10 @@ model Product {
 model Order {
   id         Int      @id @default(autoincrement())
   userId     Int
-  user       User     @relation(fields: [userId], references: [id])
-  items      Json     // Array of {productId, quantity, price}
+  items      Json
   totalPrice Int
   location   String?
-  status     String   @default("pending") // pending, delivered, cancelled
+  status     String   @default("pending")
   createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
 }
