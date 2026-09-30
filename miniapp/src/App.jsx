@@ -76,7 +76,7 @@ export default function App() {
           </header>
           <div className="hero-widget">
             <h3>Yangi kolleksiyalarni ko'rish</h3>
-            <button onClick={() => setActiveTab('catalog')}>Katalogga o'tish</button>
+            <button className="primary-btn" onClick={() => setActiveTab('catalog')}>Katalogga o'tish</button>
           </div>
         </div>
       )}
