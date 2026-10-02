@@ -16,6 +16,10 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [phone, setPhone] = useState('');
 
+  const [location, setLocation] = useState(null);
+  const [addressLoading, setAddressLoading] = useState(false);
+  const deliveryFee = 20000; // 20,000 UZS static fake delivery fee
+
   const fetchProducts = async () => {
     try {
       const res = await axios.get(`${API_URL}/products`);
@@ -35,10 +39,38 @@ export default function App() {
     setCart([...cart, product]);
   };
 
+  const getLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Sizning qurilmangizda manzilni aniqlash funksiyasi yo'q.");
+      return;
+    }
+    setAddressLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        });
+        setAddressLoading(false);
+      },
+      (error) => {
+        console.error("Location error:", error);
+        alert("Manzilni aniqlashda xatolik! Telefon sozlamalaridan GPS'ga ruxsat bering.");
+        setAddressLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
   const checkout = async () => {
+    if (!location) {
+      alert("Iltimos, avval manzilingizni aniqlang!");
+      return;
+    }
     const userId = tg.initDataUnsafe?.user?.id || 12345;
     const name = tg.initDataUnsafe?.user?.first_name || 'Xaridor';
-    const totalPrice = cart.reduce((sum, item) => sum + item.newPrice, 0);
+    const itemsTotal = cart.reduce((sum, item) => sum + item.newPrice, 0);
+    const totalPrice = itemsTotal + deliveryFee;
     
     try {
       await axios.post(`${API_URL}/orders`, {
@@ -47,6 +79,7 @@ export default function App() {
         phone,
         items: cart,
         totalPrice,
+        location
       });
       alert('Buyurtma qabul qilindi! Kuryer siz bilan boglanadi.');
       setCart([]);
@@ -121,15 +154,41 @@ export default function App() {
                 />
               </div>
 
-              <div className="total">
-                <strong>Jami: </strong>
-                <span>{cart.reduce((a, b) => a + b.newPrice, 0).toLocaleString()} so'm</span>
+              <div className="location-container" style={{ marginTop: '15px' }}>
+                <label>Yetkazib berish manzili:</label>
+                {location ? (
+                  <div style={{ color: '#2ecc71', fontSize: '14px', marginTop: '5px' }}>
+                    ✅ Manzilingiz aniqlandi (GPS orqali)
+                  </div>
+                ) : (
+                  <button 
+                    onClick={getLocation} 
+                    style={{ background: '#f0f0f0', color: '#333', padding: '10px', border: '1px solid #ddd', borderRadius: '8px', width: '100%', marginTop: '5px', cursor: 'pointer' }}
+                  >
+                    {addressLoading ? "Aniqlanmoqda..." : "📍 Manzilimni aniqlash"}
+                  </button>
+                )}
+              </div>
+
+              <div className="total" style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', fontSize: '14px', color: '#666' }}>
+                  <span>Tovarlar:</span>
+                  <span>{cart.reduce((a, b) => a + b.newPrice, 0).toLocaleString()} so'm</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '14px', color: '#666' }}>
+                  <span>Yetkazib berish:</span>
+                  <span>{deliveryFee.toLocaleString()} so'm</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px' }}>
+                  <strong>Jami: </strong>
+                  <strong>{(cart.reduce((a, b) => a + b.newPrice, 0) + deliveryFee).toLocaleString()} so'm</strong>
+                </div>
               </div>
               <button 
                 className="primary-btn" 
                 onClick={checkout}
-                disabled={!phone}
-                style={{ opacity: phone ? 1 : 0.5 }}
+                disabled={!phone || !location}
+                style={{ opacity: (phone && location) ? 1 : 0.5 }}
               >
                 Buyurtmani tasdiqlash
               </button>
