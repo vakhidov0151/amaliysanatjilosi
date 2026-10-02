@@ -20,6 +20,9 @@ export default function App() {
   const [addressLoading, setAddressLoading] = useState(false);
   const deliveryFee = 20000; // 20,000 UZS static fake delivery fee
 
+  const [selectedCategory, setSelectedCategory] = useState('Barchasi');
+  const categories = ['Barchasi', 'Birinchi yordam', "Og'riq qoldiruvchi", 'Bolalar uchun'];
+
   const fetchProducts = async () => {
     try {
       const res = await axios.get(`${API_URL}/products`);
@@ -92,9 +95,9 @@ export default function App() {
   if (onboarding) {
     return (
       <div className="onboarding">
-        <h1>San'at asarlari olamiga xush kelibsiz! 🎨</h1>
-        <p>Uy va ofisingiz uchun eng noyob va chiroyli asarlarni tanlang.</p>
-        <button className="primary-btn" onClick={() => setOnboarding(false)}>Boshlash</button>
+        <h1>Apteka botiga xush kelibsiz! 💊</h1>
+        <p>Sog'lig'ingiz uchun eng kerakli dorilarni uydan chiqmay buyurtma qiling.</p>
+        <button className="primary-btn" onClick={() => setOnboarding(false)}>Katalogga o'tish</button>
       </div>
     );
   }
@@ -105,10 +108,10 @@ export default function App() {
         <div className="home-screen">
           <header>
             <h2>Salom, {tg.initDataUnsafe?.user?.first_name || 'Aziz mijoz'}! 👋</h2>
-            <p>Bugun qanday san'at asari izlayapsiz?</p>
+            <p>Bugun qanday dori vositalari izlayapsiz?</p>
           </header>
           <div className="hero-widget">
-            <h3>Yangi kolleksiyalarni ko'rish</h3>
+            <h3>Yangi dorilar va vitaminlar</h3>
             <button className="primary-btn" onClick={() => setActiveTab('catalog')}>Katalogga o'tish</button>
           </div>
         </div>
@@ -117,8 +120,26 @@ export default function App() {
       {activeTab === 'catalog' && (
         <div className="catalog-screen">
           <h2>Katalog</h2>
+          <div className="categories-scroll" style={{ display: 'flex', overflowX: 'auto', gap: '10px', padding: '0 15px 15px', scrollbarWidth: 'none' }}>
+            {categories.map(c => (
+              <button 
+                key={c} 
+                onClick={() => setSelectedCategory(c)}
+                style={{ 
+                  padding: '8px 16px', 
+                  borderRadius: '20px', 
+                  border: 'none', 
+                  whiteSpace: 'nowrap',
+                  background: selectedCategory === c ? '#2481cc' : '#f0f0f0',
+                  color: selectedCategory === c ? '#fff' : '#333'
+                }}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
           <div className="product-grid">
-            {products.map(p => (
+            {products.filter(p => selectedCategory === 'Barchasi' || p.category === selectedCategory).map(p => (
               <div key={p.id} className="product-card" onClick={() => setSelectedProduct(p)}>
                 <img src={p.imageUrl} alt={p.title} />
                 <h4>{p.title}</h4>
