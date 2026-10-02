@@ -21,7 +21,6 @@ export default function App() {
   const deliveryFee = 20000; // 20,000 UZS static fake delivery fee
 
   const [selectedCategory, setSelectedCategory] = useState('Barchasi');
-  const categories = ['Barchasi', 'Birinchi yordam', "Og'riq qoldiruvchi", 'Bolalar uchun'];
 
   const fetchProducts = async () => {
     try {
@@ -121,7 +120,7 @@ export default function App() {
         <div className="catalog-screen">
           <h2>Katalog</h2>
           <div className="categories-scroll" style={{ display: 'flex', overflowX: 'auto', gap: '10px', padding: '0 15px 15px', scrollbarWidth: 'none' }}>
-            {categories.map(c => (
+            {['Barchasi', ...new Set(products.map(p => p.category))].map(c => (
               <button 
                 key={c} 
                 onClick={() => setSelectedCategory(c)}
@@ -130,8 +129,9 @@ export default function App() {
                   borderRadius: '20px', 
                   border: 'none', 
                   whiteSpace: 'nowrap',
-                  background: selectedCategory === c ? '#2481cc' : '#f0f0f0',
-                  color: selectedCategory === c ? '#fff' : '#333'
+                  background: selectedCategory === c ? '#1e88e5' : '#e3f2fd',
+                  color: selectedCategory === c ? '#fff' : '#1e88e5',
+                  fontWeight: selectedCategory === c ? 'bold' : 'normal',
                 }}
               >
                 {c}
