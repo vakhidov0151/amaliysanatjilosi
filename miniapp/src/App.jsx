@@ -82,7 +82,7 @@ export default function App() {
         phone,
         items: cart,
         totalPrice,
-        location
+        location: `https://www.google.com/maps?q=${location.lat},${location.lng}`
       });
       alert('Buyurtma qabul qilindi! Kuryer siz bilan boglanadi.');
       setCart([]);

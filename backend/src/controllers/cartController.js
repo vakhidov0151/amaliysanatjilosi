@@ -28,13 +28,12 @@ exports.submitOrder = async (req, res) => {
       });
     }
 
-    // Save order
     const order = await prisma.order.create({
       data: {
         userId: user.id,
         items,
         totalPrice,
-        location
+        location: typeof location === 'object' ? JSON.stringify(location) : location
       }
     });
 
