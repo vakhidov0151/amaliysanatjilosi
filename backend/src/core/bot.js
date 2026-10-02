@@ -5,9 +5,9 @@ const bot = new Telegraf(config.BOT_TOKEN);
 
 bot.start((ctx) => {
   ctx.reply(
-    "Assalomu alaykum! Amaliy San'at Jilosi do'koniga xush kelibsiz. 🎨\n\nQuyidagi tugmani bosib galereyamizga kiring va chiroyli asarlarni xarid qiling:",
+    "Assalomu alaykum! Onlayn Dorixona (Apteka) botiga xush kelibsiz. ??\n\nQuyidagi tugmani bosib katalogimizga kiring va kerakli dori hamda vitaminlarni uydan chiqmay buyurtma qiling:",
     Markup.inlineKeyboard([
-      Markup.button.webApp("🖼 Galereyani ochish", config.MINI_APP_URL)
+      Markup.button.webApp("?? Dorixonani ochish", config.MINI_APP_URL)
     ])
   );
 });

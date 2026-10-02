@@ -91,10 +91,10 @@ export default function App() {
   return (
     <div className="admin-container">
       <aside className="sidebar">
-        <h2>Amaliy San'at Admin</h2>
+        <h2>Apteka Admin</h2>
         <nav>
           <button className={tab === 'orders' ? 'active' : ''} onClick={() => setTab('orders')}><ShoppingBag /> Buyurtmalar</button>
-          <button className={tab === 'products' ? 'active' : ''} onClick={() => setTab('products')}><Package /> Asarlar</button>
+          <button className={tab === 'products' ? 'active' : ''} onClick={() => setTab('products')}><Package /> Dorilar</button>
         </nav>
       </aside>
       <main className="content">
@@ -107,8 +107,9 @@ export default function App() {
                   <th>ID</th>
                   <th>Mijoz</th>
                   <th>Tel</th>
-                  <th>Asarlar</th>
+                  <th>Dorilar</th>
                   <th>Summa</th>
+                  <th>Manzil</th>
                   <th>Vaqt</th>
                 </tr>
               </thead>
@@ -120,6 +121,7 @@ export default function App() {
                     <td>{o.user.phone || '-'}</td>
                     <td>{o.items.map(i => i.title).join(', ')}</td>
                     <td>{o.totalPrice.toLocaleString()} so'm</td>
+                    <td>{o.location ? <a href={o.location} target="_blank" rel="noreferrer" style={{color: '#1e88e5'}}>📍 Xarita</a> : '-'}</td>
                     <td>{new Date(o.createdAt).toLocaleString()}</td>
                   </tr>
                 ))}
@@ -129,7 +131,7 @@ export default function App() {
         ) : (
           <div>
             <div className="header-flex">
-              <h2>Galereyadagi asarlar</h2>
+              <h2>Dorixona ombori</h2>
               <button className="primary-btn" onClick={() => setIsAddingProduct(!isAddingProduct)}>
                 <Plus /> {isAddingProduct ? "Yopish" : "Yangi qo'shish"}
               </button>
@@ -137,17 +139,17 @@ export default function App() {
             
             {isAddingProduct && (
               <div className="add-product-form">
-                <h3>Yangi asar qo'shish</h3>
+                <h3>Yangi dori qo'shish</h3>
                 <form onSubmit={submitProduct}>
-                  <input type="text" placeholder="Asar nomi" required value={newProduct.title} onChange={e => setNewProduct({...newProduct, title: e.target.value})} />
-                  <input type="text" placeholder="Kategoriya (masalan: Moybo'yoq)" required value={newProduct.category} onChange={e => setNewProduct({...newProduct, category: e.target.value})} />
-                  <textarea placeholder="Tarifi (o'lchamlari va hk)" required value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})}></textarea>
+                  <input type="text" placeholder="Dori nomi" required value={newProduct.title} onChange={e => setNewProduct({...newProduct, title: e.target.value})} />
+                  <input type="text" placeholder="Kategoriya (masalan: Isitma)" required value={newProduct.category} onChange={e => setNewProduct({...newProduct, category: e.target.value})} />
+                  <textarea placeholder="Tavsifi (Qo'llanilishi va hk)" required value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})}></textarea>
                   <div className="price-inputs">
                     <input type="text" placeholder="Eski narxi (ixtiyoriy)" value={newProduct.oldPrice} onChange={e => handlePriceChange('oldPrice', e.target.value)} />
                     <input type="text" placeholder="Yangi narxi" required value={newProduct.newPrice} onChange={e => handlePriceChange('newPrice', e.target.value)} />
                   </div>
                   <div className="image-upload">
-                    <label>Asar rasmini yuklang:</label>
+                    <label>Dori rasmini yuklang:</label>
                     <input type="file" accept="image/*" onChange={handleImageUpload} required />
                     {newProduct.imageUrl && <img src={newProduct.imageUrl} width="100" alt="Preview" />}
                   </div>
@@ -183,3 +185,4 @@ export default function App() {
     </div>
   );
 }
+

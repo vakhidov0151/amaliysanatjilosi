@@ -41,7 +41,7 @@ exports.submitOrder = async (req, res) => {
     try {
       await bot.telegram.sendMessage(
         userId, 
-        `🎉 Buyurtmangiz muvaffaqiyatli qabul qilindi!\n\nBuyurtma raqami: #${order.id}\nJami summa: ${totalPrice.toLocaleString()} so'm\n\nTez orada siz bilan bog'lanamiz! 🎨`
+        ?? Buyurtmangiz muvaffaqiyatli qabul qilindi!\n\nBuyurtma raqami: #\nJami summa:  + totalPrice.toLocaleString() +  so'm\n\nTez orada dorixonamiz xodimlari siz bilan bog'lanishadi! ??
       );
     } catch (botError) {
       console.error("Bot xabari yuborishda xatolik:", botError);
